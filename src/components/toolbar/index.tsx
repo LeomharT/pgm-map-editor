@@ -23,7 +23,7 @@ export default function Toolbar() {
   const [mode, setMode] = useState<ToolMode>();
 
   return (
-    <div className='fixed bottom-6 left-[50%] translate-x-[-50%]'>
+    <div className='fixed top-2 left-[50%] translate-x-[-50%]'>
       <Card size='sm'>
         <CardContent>
           <div className='flex flex-row flex-nowrap gap-2'>
