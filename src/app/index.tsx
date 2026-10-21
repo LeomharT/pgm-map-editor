@@ -8,9 +8,9 @@ export default function App() {
   return (
     <ThemeProvider defaultTheme={theme} storageKey='vite-ui-theme'>
       <TooltipProvider>
-        <div className='w-dvw h-dvh'>
+        <main className='w-dvw h-dvh'>
           <Toolbar />
-        </div>
+        </main>
       </TooltipProvider>
     </ThemeProvider>
   );
