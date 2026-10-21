@@ -1,17 +1,14 @@
 import Toolbar from '@/components/toolbar';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { clamp } from '@/utils/math';
 import { Application, Container, Graphics } from 'pixi.js';
 import { useEffect, useEffectEvent, useRef } from 'react';
 import { ThemeProvider, useTheme } from '../components/ui/theme-provider';
+
 export default function App() {
   const { theme } = useTheme();
 
   const ref = useRef<HTMLDivElement>(null);
-
-  const prevRef = useRef({
-    x: 0,
-    y: 0,
-  });
 
   const transformRef = useRef({
     x: 0,
@@ -25,52 +22,69 @@ export default function App() {
       resizeTo: window,
       resolution: window.devicePixelRatio,
       autoDensity: true,
+      autoStart: false,
+      sharedTicker: false,
     });
     app.stage.eventMode = 'static';
     app.stage.hitArea = app.screen;
 
-    const canvas = app.canvas;
+    const world = new Container();
+    app.stage.addChild(world);
 
-    ref.current?.append(canvas);
-
-    const container = new Container({});
-    app.stage.addChild(container);
-
-    const obj = new Graphics().rect(0, 0, 100, 100).fill('cyan');
-    obj.eventMode = 'static';
-    obj.cursor = 'grab';
-
-    obj.on('pointerdown', (e) => {
+    app.stage.on('pointerdown', (e) => {
       e.stopPropagation();
       canvas.setPointerCapture(e.pointerId);
 
-      obj.cursor = 'grabbing';
-      canvas.style.cursor = 'grabbing';
-
-      prevRef.current.x = e.clientX;
-      prevRef.current.y = e.clientY;
+      transformRef.current.x = e.clientX;
+      transformRef.current.y = e.clientY;
     });
 
-    obj.on('pointerup', (e) => {
-      obj.cursor = 'grab';
-      canvas.style.cursor = 'grab';
-
+    app.stage.on('pointerup', (e) => {
       if (canvas.hasPointerCapture(e.pointerId)) {
         canvas.releasePointerCapture(e.pointerId);
       }
     });
 
-    obj.on('globalpointermove', (e) => {
+    app.stage.on('globalpointermove', (e) => {
       if (!canvas.hasPointerCapture(e.pointerId)) return;
 
-      obj.position.x += e.clientX - prevRef.current.x;
-      obj.position.y += e.clientY - prevRef.current.y;
+      world.position.x += e.clientX - transformRef.current.x;
+      world.position.y += e.clientY - transformRef.current.y;
 
-      prevRef.current.x = e.clientX;
-      prevRef.current.y = e.clientY;
+      transformRef.current.x = e.clientX;
+      transformRef.current.y = e.clientY;
+
+      app.render();
     });
 
+    app.stage.on('wheel', (e) => {
+      e.preventDefault();
+
+      const mouse = e.getLocalPosition(world.parent!);
+
+      const prev = world.scale.x;
+      const next = clamp(prev * Math.exp(-e.deltaY * 0.001), 0.2, 100);
+
+      const k = next / prev;
+
+      world.position.x = mouse.x - (mouse.x - world.position.x) * k;
+      world.position.y = mouse.y - (mouse.y - world.position.y) * k;
+
+      world.scale.set(next, next);
+
+      app.render();
+    });
+
+    const canvas = app.canvas;
+    ref.current?.append(canvas);
+
+    const container = new Container({});
+    world.addChild(container);
+
+    const obj = new Graphics().rect(0, 0, 100, 100).fill('cyan');
     container.addChild(obj);
+
+    app.render();
   });
 
   useEffect(() => {
