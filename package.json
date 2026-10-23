@@ -16,8 +16,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.3.3",
-    "lucide-react": "^1.59.0",
-    "pixi.js": "^8.22.0",
+    "lucide-react": "^1.61.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "shadcn": "^4.22.1",
@@ -36,6 +35,6 @@
     "globals": "^17.13.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.0",
-    "vite": "^8.3.4"
+    "vite": "^8.3.5"
   }
 }
