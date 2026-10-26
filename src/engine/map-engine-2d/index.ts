@@ -1,12 +1,23 @@
 import { Colors } from '@/constants/colors';
+import { EventDispatcher } from '@/lib/eventDispatcher';
 
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 const clamp = (value: number, min: number, max: number) => {
   return Math.min(max, Math.max(value, min));
 };
 
-export default class MapEngine2D {
+export default class MapEngine2D extends EventDispatcher<{
+  transform: {
+    transform: {
+      x: number;
+      y: number;
+      scale: number;
+    };
+  };
+}> {
   constructor(container: HTMLDivElement) {
+    super();
+
     this._canvas = this._initalCanvas();
     container.append(this._canvas);
 
@@ -92,6 +103,7 @@ export default class MapEngine2D {
     this._prev.y = e.offsetY;
 
     this.requestRender();
+    this.dispatchEvent({ type: 'transform', transform: this._transform });
   };
 
   private _handleOnWheel = (e: WheelEvent) => {
@@ -106,6 +118,7 @@ export default class MapEngine2D {
     this._transform.scale = next;
 
     this.requestRender();
+    this.dispatchEvent({ type: 'transform', transform: this._transform });
   };
 
   private clean = () => {
