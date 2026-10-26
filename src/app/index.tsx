@@ -1,5 +1,5 @@
-import MapCanvas from '@/feature/map/components/MapCanvas';
+import MapCanvas2D from '@/feature/map/components/MapCanvas2D';
 
 export default function App() {
-  return <MapCanvas />;
+  return <MapCanvas2D />;
 }

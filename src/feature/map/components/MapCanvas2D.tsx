@@ -1,7 +1,7 @@
 import MapEngine2D from '@/engine/map-engine-2d';
 import { useEffect, useRef } from 'react';
 
-export default function MapCanvas() {
+export default function MapCanvas2D() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -9,7 +9,6 @@ export default function MapCanvas() {
     if (!container) return;
 
     const engine = new MapEngine2D(container);
-
     return () => engine.dispose();
   }, []);
 
