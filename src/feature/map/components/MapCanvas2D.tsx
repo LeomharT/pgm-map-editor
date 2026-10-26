@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/refs */
 import MapEngine2D from '@/engine/map-engine-2d';
 import { useEffect, useRef } from 'react';
 import { MapCanvas2DContext } from '../context';
@@ -21,7 +20,7 @@ export default function MapCanvas2D() {
   return (
     <MapCanvas2DContext.Provider
       value={{
-        engine: engineRef.current,
+        engine: engineRef,
       }}
     >
       <div ref={ref} className='h-dvh w-dvw'></div>
