@@ -1,8 +1,9 @@
 import { Colors } from '@/constants/colors';
 
-const MAJOR_CELL_STEP = 100;
-
 const mod = (n: number, m: number) => ((n % m) + m) % m;
+const clamp = (value: number, min: number, max: number) => {
+  return Math.min(max, Math.max(value, min));
+};
 
 export default class MapEngine2D {
   constructor(container: HTMLDivElement) {
@@ -17,6 +18,7 @@ export default class MapEngine2D {
     this._canvas.addEventListener('pointerdown', this._handleOnPointerDown, { signal });
     this._canvas.addEventListener('pointerup', this._handleOnPointerUp, { signal });
     this._canvas.addEventListener('pointermove', this._handleOnPointerMove, { signal });
+    this._canvas.addEventListener('wheel', this._handleOnWheel, { signal, passive: false });
   }
 
   private _canvas: HTMLCanvasElement;
@@ -92,6 +94,20 @@ export default class MapEngine2D {
     this.requestRender();
   };
 
+  private _handleOnWheel = (e: WheelEvent) => {
+    e.preventDefault();
+
+    const next = clamp(this._transform.scale * Math.exp(-e.deltaY * 0.001), 0.1, 1000);
+
+    const k = next / this._transform.scale;
+    this._transform.x = e.offsetX - (e.offsetX - this._transform.x) * k;
+    this._transform.y = e.offsetY - (e.offsetY - this._transform.y) * k;
+
+    this._transform.scale = next;
+
+    this.requestRender();
+  };
+
   private clean = () => {
     this.ctx.save();
 
@@ -103,23 +119,26 @@ export default class MapEngine2D {
     this.ctx.restore();
   };
 
-  private _renderGrid = (step: number) => {
+  private _renderGrid = (step: number, color: string, dash?: [number, number]) => {
     this.ctx.save();
 
+    this.ctx.strokeStyle = color;
     this.ctx.setTransform(this._size.dpr, 0, 0, this._size.dpr, 0, 0);
-    this.ctx.strokeStyle = Colors.NEUTRAL300;
+    if (dash) this.ctx.setLineDash(dash);
 
     this.ctx.beginPath();
-    for (let x = mod(this._transform.x, step); x < this._size.width; x += step) {
+    if (dash) this.ctx.lineDashOffset = -this._transform.y % (dash[0] + dash[1]);
+    for (let x = mod(this._transform.x, step); x < this._canvas.width; x += step) {
       this.ctx.moveTo(x, 0);
-      this.ctx.lineTo(x, this._size.height);
+      this.ctx.lineTo(x, this._canvas.height);
     }
     this.ctx.stroke();
 
     this.ctx.beginPath();
-    for (let y = mod(this._transform.y, step); y < this._size.width; y += step) {
+    if (dash) this.ctx.lineDashOffset = -this._transform.x % (dash[0] + dash[1]);
+    for (let y = mod(this._transform.y, step); y < this._canvas.height; y += step) {
       this.ctx.moveTo(0, y);
-      this.ctx.lineTo(this._size.width, y);
+      this.ctx.lineTo(this._canvas.width, y);
     }
     this.ctx.stroke();
 
@@ -129,7 +148,14 @@ export default class MapEngine2D {
   private _render = () => {
     this.clean();
 
-    this._renderGrid(MAJOR_CELL_STEP);
+    const MAJOR_CELL_STEP = 100 * this._transform.scale;
+    const MINOR_CELL_STEP = MAJOR_CELL_STEP / 5;
+
+    const majorColor = this._transform.scale > 0.5 ? Colors.NEUTRAL300 : Colors.NEUTRAL200;
+    const minorColor = this._transform.scale > 0.7 ? Colors.NEUTRAL300 : Colors.NEUTRAL200;
+
+    if (this._transform.scale > 0.5) this._renderGrid(MINOR_CELL_STEP, minorColor, [3, 3]);
+    this._renderGrid(MAJOR_CELL_STEP, majorColor);
   };
 
   public requestRender = () => {
