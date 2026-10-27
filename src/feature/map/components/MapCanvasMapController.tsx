@@ -17,8 +17,8 @@ export default function MapCanvasMapController() {
       setZoom(transform.scale);
     }
 
-    engine.current.transform.addEventListener('transform', updateZoom);
-    return () => engine.current.transform.removeEventListener('transform', updateZoom);
+    engine.transform.addEventListener('transform', updateZoom);
+    return () => engine.transform.removeEventListener('transform', updateZoom);
   }, [engine]);
 
   return (
