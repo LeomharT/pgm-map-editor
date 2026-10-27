@@ -53,4 +53,13 @@ export default class MapEngine2DRenderer {
     this.canvas.style.width = this._engine.size.width + 'px';
     this.canvas.style.height = this._engine.size.height + 'px';
   };
+
+  public dispose() {
+    this.canvas.remove();
+
+    if (this._frameId !== null) {
+      cancelAnimationFrame(this._frameId);
+      this._frameId = null;
+    }
+  }
 }

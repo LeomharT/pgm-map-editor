@@ -7,11 +7,11 @@ export default class MapEngine2D {
     this.size = new MapEngine2DSize();
     this.size.addEventListener('resize', this._resize);
 
-    this.transform = new MapEngine2DTransform();
-
     this.renderer = new MapEngine2DRenderer(this);
-
     this.canvas = this.renderer.canvas;
+
+    this.transform = new MapEngine2DTransform(this);
+    this.transform.addEventListener('transform', this.renderer.requestRender);
 
     this._resize();
   }
@@ -30,7 +30,12 @@ export default class MapEngine2D {
   };
 
   public dispose() {
-    this.canvas.remove();
+    this.renderer.dispose();
+
     this.size.dispose();
+    this.size.removeEventListener('resize', this._resize);
+
+    this.transform.dispose();
+    this.transform.removeEventListener('transform', this.renderer.requestRender);
   }
 }

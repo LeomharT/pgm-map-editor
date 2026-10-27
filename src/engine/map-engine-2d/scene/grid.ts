@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/colors';
+import { mod } from '@/utils/math';
 import type MapEngine2D from '..';
 
 export default class MapEngine2DGrid {
@@ -12,22 +13,29 @@ export default class MapEngine2DGrid {
     return this._engine.renderer.ctx;
   }
 
-  private _renderGrid = (step: number) => {
+  private get _transform() {
+    return this._engine.transform;
+  }
+
+  private _renderGrid = (step: number, color: string, dash?: [number, number]) => {
     this._ctx.save();
 
-    this._ctx.strokeStyle = Colors.NEUTRAL300;
+    this._ctx.strokeStyle = color;
     this._ctx.lineWidth = 1;
+    if (dash) this._ctx.setLineDash(dash);
 
     this._ctx.setTransform(this._engine.size.pixelRatio, 0, 0, this._engine.size.pixelRatio, 0, 0);
     this._ctx.beginPath();
-    for (let x = 0; x < this._engine.size.width; x += step) {
+    if (dash) this._ctx.lineDashOffset = -this._transform.y % (dash[0] + dash[1]);
+    for (let x = mod(this._transform.x, step); x < this._engine.size.width; x += step) {
       this._ctx.moveTo(x, 0);
       this._ctx.lineTo(x, this._engine.size.height);
     }
     this._ctx.stroke();
 
     this._ctx.beginPath();
-    for (let y = 0; y < this._engine.size.height; y += step) {
+    if (dash) this._ctx.lineDashOffset = -this._transform.x % (dash[0] + dash[1]);
+    for (let y = mod(this._transform.y, step); y < this._engine.size.height; y += step) {
       this._ctx.moveTo(0, y);
       this._ctx.lineTo(this._engine.size.width, y);
     }
@@ -37,8 +45,13 @@ export default class MapEngine2DGrid {
   };
 
   public draw = () => {
-    const MAJOR_CELL = 100;
+    const MAJOR_CELL = 100 * this._transform.scale;
+    const MINOR_CELL = MAJOR_CELL / 5;
 
-    this._renderGrid(MAJOR_CELL);
+    const MAJOR_CELL_COLOR = this._transform.scale > 0.5 ? Colors.NEUTRAL300 : Colors.NEUTRAL200;
+    const MINOR_CELL_COLOR = this._transform.scale > 0.7 ? Colors.NEUTRAL300 : Colors.NEUTRAL200;
+
+    if (this._transform.scale > 0.5) this._renderGrid(MINOR_CELL, MINOR_CELL_COLOR, [3, 3]);
+    this._renderGrid(MAJOR_CELL, MAJOR_CELL_COLOR);
   };
 }
