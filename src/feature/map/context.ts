@@ -2,7 +2,10 @@ import type MapEngine2D from '@/engine/map-engine-2d';
 import { createContext } from 'react';
 
 type MapCanvas2DContextValue = {
-  engine: React.RefObject<MapEngine2D | null>;
+  dispatchEvent: (
+    ...args: Parameters<MapEngine2D['dispatchEvent']>
+  ) => ReturnType<MapEngine2D['dispatchEvent']> | undefined;
+  addEventListener: (...args: Parameters<MapEngine2D['addEventListener']>) => void;
 };
 
 export const MapCanvas2DContext = createContext<MapCanvas2DContextValue>(
