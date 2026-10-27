@@ -5,6 +5,4 @@ type MapCanvas2DContextValue = {
   engine: MapEngine2D | null;
 };
 
-export const MapCanvas2DContext = createContext<MapCanvas2DContextValue>(
-  {} as MapCanvas2DContextValue,
-);
+export const MapCanvas2DContext = createContext<MapCanvas2DContextValue | null>(null);
