@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
-import { Card, CardContent } from '@/components/ui/card';
 import { MinusIcon, PlusIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useMapCanvas2D } from '../hooks/useMapCanvas2D';
@@ -22,22 +21,18 @@ export default function MapCanvasMapController() {
   }, [engine]);
 
   return (
-    <div className='absolute bottom-4 left-4' onClick={() => {}}>
-      <Card className='p-1'>
-        <CardContent className='p-1'>
-          <ButtonGroup>
-            <Button size='icon' variant='ghost'>
-              <MinusIcon />
-            </Button>
-            <Button variant='ghost' className='w-18'>
-              {(zoom * 100).toFixed(0)}%
-            </Button>
-            <Button size='icon' variant='ghost'>
-              <PlusIcon />
-            </Button>
-          </ButtonGroup>
-        </CardContent>
-      </Card>
+    <div className='bg-background absolute bottom-4 left-4 rounded-lg' onClick={() => {}}>
+      <ButtonGroup>
+        <Button size='icon-lg' variant='ghost' className='h-10 w-10'>
+          <MinusIcon />
+        </Button>
+        <Button size='lg' variant='ghost' className='h-10 w-18'>
+          {(zoom * 100).toFixed(0)}%
+        </Button>
+        <Button size='icon-lg' variant='ghost' className='h-10 w-10'>
+          <PlusIcon />
+        </Button>
+      </ButtonGroup>
     </div>
   );
 }
