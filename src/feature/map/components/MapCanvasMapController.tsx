@@ -2,10 +2,24 @@ import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Card, CardContent } from '@/components/ui/card';
 import { MinusIcon, PlusIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useMapCanvas2D } from '../hooks/useMapCanvas2D';
 
 export default function MapCanvasMapController() {
-  const [zoom] = useState(1);
+  const { engine } = useMapCanvas2D();
+
+  const [zoom, setZoom] = useState(engine?.transform.scale ?? 1);
+
+  useEffect(() => {
+    if (!engine) return;
+
+    function updateZoom({ transform }: { transform: { x: number; y: number; scale: number } }) {
+      setZoom(transform.scale);
+    }
+
+    engine.current.transform.addEventListener('transform', updateZoom);
+    return () => engine.current.transform.removeEventListener('transform', updateZoom);
+  }, [engine]);
 
   return (
     <div className='absolute bottom-4 left-4' onClick={() => {}}>
