@@ -1,11 +1,10 @@
 import type Konva from 'konva';
-import type MapEngine2D from '..';
+import type MapEngine2DViewport from '../viewport';
 
 export default class MapEngine2DInteraction {
-  constructor(engine: MapEngine2D) {
-    this._engine = engine;
-
-    const stage = this._engine.stage;
+  constructor(stage: Konva.Stage, viewport: MapEngine2DViewport) {
+    this._stage = stage;
+    this._viewport = viewport;
 
     stage.on('pointerdown', this._handleOnPointerDown);
     stage.on('pointerup', this._handleOnPointerUp);
@@ -13,31 +12,37 @@ export default class MapEngine2DInteraction {
     stage.on('wheel', this._handleOnWheel);
   }
 
-  private _engine: MapEngine2D;
+  private _stage: Konva.Stage;
+
+  private _viewport: MapEngine2DViewport;
 
   private _prev = { x: 0, y: 0 };
 
   private _handleOnPointerDown = (e: Konva.KonvaEventObject<PointerEvent>) => {
-    console.log(e);
-    this._engine.stage.setPointerCapture(e.pointerId);
+    this._stage.setPointerCapture(e.pointerId);
 
     this._prev.x = e.evt.clientX;
     this._prev.y = e.evt.clientY;
   };
 
   private _handleOnPointerUp = (e: Konva.KonvaEventObject<PointerEvent>) => {
-    if (this._engine.stage.hasPointerCapture(e.pointerId)) {
-      this._engine.stage.releaseCapture(e.pointerId);
+    if (this._stage.hasPointerCapture(e.pointerId)) {
+      this._stage.releaseCapture(e.pointerId);
     }
   };
 
   private _handleOnPointerMove = (e: Konva.KonvaEventObject<PointerEvent>) => {
-    if (!this._engine.stage.hasPointerCapture(e.pointerId)) return;
+    if (!this._stage.hasPointerCapture(e.pointerId)) return;
+
+    if ((e.evt.buttons & 1) === 0) {
+      this._stage.releaseCapture(e.pointerId);
+      return;
+    }
 
     const tx = e.evt.clientX - this._prev.x;
     const ty = e.evt.clientY - this._prev.y;
 
-    this._engine.viewport.setTransform((prev) => ({
+    this._viewport.setTransform((prev) => ({
       ...prev,
       x: prev.x + tx,
       y: prev.y + ty,
@@ -48,18 +53,18 @@ export default class MapEngine2DInteraction {
   };
 
   private _handleOnWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
-    const position = this._engine.stage.getPointerPosition();
+    const position = this._stage.getPointerPosition();
     if (!position) return;
 
     e.evt.preventDefault();
 
-    this._engine.viewport.zoomAt(position.x, position.y, -e.evt.deltaY * 0.001);
+    this._viewport.zoomAt(position.x, position.y, -e.evt.deltaY * 0.001);
   };
 
   public dispose = () => {
-    this._engine.stage.off('pointerdown', this._handleOnPointerDown);
-    this._engine.stage.off('pointerup', this._handleOnPointerUp);
-    this._engine.stage.off('pointermove', this._handleOnPointerMove);
-    this._engine.stage.off('wheel', this._handleOnWheel);
+    this._stage.off('pointerdown', this._handleOnPointerDown);
+    this._stage.off('pointerup', this._handleOnPointerUp);
+    this._stage.off('pointermove', this._handleOnPointerMove);
+    this._stage.off('wheel', this._handleOnWheel);
   };
 }

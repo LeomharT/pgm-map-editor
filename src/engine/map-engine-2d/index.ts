@@ -23,12 +23,12 @@ export default class MapEngine2D {
       height: this.size.height,
     });
 
-    this._interaction = new MapEngine2DInteraction(this);
+    this._interaction = new MapEngine2DInteraction(this.stage, this.viewport);
 
     this._resize();
   }
 
-  public stage: Konva.Stage;
+  private stage: Konva.Stage;
 
   private _interaction: MapEngine2DInteraction;
 
