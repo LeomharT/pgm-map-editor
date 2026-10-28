@@ -1,6 +1,6 @@
 import MapEngine2DRenderer from './renderer';
 import { MapEngine2DSize } from './utils/size';
-import MapEngine2DTransform from './utils/transform';
+import MapEngine2DViewport from './viewport';
 
 export default class MapEngine2D {
   constructor() {
@@ -10,8 +10,8 @@ export default class MapEngine2D {
     this.renderer = new MapEngine2DRenderer(this);
     this.canvas = this.renderer.canvas;
 
-    this.transform = new MapEngine2DTransform(this);
-    this.transform.addEventListener('transform', this.renderer.requestRender);
+    this.viewport = new MapEngine2DViewport(this);
+    this.viewport.addEventListener('transform', this.renderer.requestRender);
 
     this._resize();
   }
@@ -20,7 +20,7 @@ export default class MapEngine2D {
 
   public size: MapEngine2DSize;
 
-  public transform: MapEngine2DTransform;
+  public viewport: MapEngine2DViewport;
 
   public renderer: MapEngine2DRenderer;
 
@@ -35,7 +35,7 @@ export default class MapEngine2D {
     this.size.dispose();
     this.size.removeEventListener('resize', this._resize);
 
-    this.transform.dispose();
-    this.transform.removeEventListener('transform', this.renderer.requestRender);
+    this.viewport.dispose();
+    this.viewport.removeEventListener('transform', this.renderer.requestRender);
   }
 }

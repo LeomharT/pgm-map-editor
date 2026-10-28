@@ -7,7 +7,7 @@ import { useMapCanvas2D } from '../hooks/useMapCanvas2D';
 export default function MapCanvasMapController() {
   const { engine } = useMapCanvas2D();
 
-  const [zoom, setZoom] = useState(engine?.transform.scale ?? 1);
+  const [zoom, setZoom] = useState(engine?.viewport.transform.scale ?? 1);
 
   useEffect(() => {
     if (!engine) return;
@@ -16,8 +16,8 @@ export default function MapCanvasMapController() {
       setZoom(transform.scale);
     }
 
-    engine.transform.addEventListener('transform', updateZoom);
-    return () => engine.transform.removeEventListener('transform', updateZoom);
+    engine.viewport.addEventListener('transform', updateZoom);
+    return () => engine.viewport.removeEventListener('transform', updateZoom);
   }, [engine]);
 
   return (

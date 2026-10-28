@@ -1,8 +1,8 @@
 import { EventDispatcher } from '@/lib/eventDispatcher';
 import { clamp } from '@/utils/math';
-import type MapEngine2D from '..';
+import type MapEngine2D from '.';
 
-export default class MapEngine2DTransform extends EventDispatcher<{
+export default class MapEngine2DViewport extends EventDispatcher<{
   transform: {
     transform: {
       x: number;
@@ -29,15 +29,15 @@ export default class MapEngine2DTransform extends EventDispatcher<{
 
   private _abortController: AbortController;
 
-  private get _transform() {
-    return { x: this.x, y: this.y, scale: this.scale };
+  public get transform() {
+    return { x: this._x, y: this._y, scale: this._scale };
   }
 
-  public x: number = 0;
+  private _x: number = 0;
 
-  public y: number = 0;
+  private _y: number = 0;
 
-  public scale: number = 1;
+  private _scale: number = 1;
 
   private _prev = { x: 0, y: 0 };
 
@@ -57,31 +57,33 @@ export default class MapEngine2DTransform extends EventDispatcher<{
   private _handleOnPointerMove = (e: PointerEvent) => {
     if (!this._engine.canvas.hasPointerCapture(e.pointerId)) return;
 
-    this.x += e.clientX - this._prev.x;
-    this.y += e.clientY - this._prev.y;
+    this._x += e.clientX - this._prev.x;
+    this._y += e.clientY - this._prev.y;
 
     this._prev.x = e.clientX;
     this._prev.y = e.clientY;
 
-    this.dispatchEvent({ type: 'transform', transform: this._transform });
+    this.dispatchEvent({ type: 'transform', transform: this.transform });
   };
 
   private _handleOnWheel = (e: WheelEvent) => {
     e.preventDefault();
 
-    const next = clamp(this.scale * Math.exp(-e.deltaY * 0.001), 0.2, 10);
+    const next = clamp(this._scale * Math.exp(-e.deltaY * 0.001), 0.2, 10);
 
-    const k = next / this.scale;
+    const k = next / this._scale;
 
-    this.x = e.clientX - (e.clientX - this.x) * k;
-    this.y = e.clientY - (e.clientY - this.y) * k;
+    this._x = e.clientX - (e.clientX - this._x) * k;
+    this._y = e.clientY - (e.clientY - this._y) * k;
 
-    this.scale = next;
+    this._scale = next;
 
-    this.dispatchEvent({ type: 'transform', transform: this._transform });
+    this.dispatchEvent({ type: 'transform', transform: this.transform });
   };
 
-  public dispose() {
+  public zoomAt = () => {};
+
+  public dispose = () => {
     this._abortController.abort();
-  }
+  };
 }

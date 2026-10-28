@@ -14,7 +14,7 @@ export default class MapEngine2DGrid {
   }
 
   private get _transform() {
-    return this._engine.transform;
+    return this._engine.viewport.transform;
   }
 
   private _renderGrid = (step: number, color: string, dash?: [number, number]) => {
