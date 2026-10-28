@@ -15,7 +15,6 @@ export default function MapCanvasMapController() {
     }
 
     engine.viewport.addEventListener('transform', updateZoom);
-
     return () => engine.viewport.removeEventListener('transform', updateZoom);
   }, [engine]);
 
@@ -25,7 +24,14 @@ export default function MapCanvasMapController() {
         <Button size='icon-lg' variant='ghost' className='h-10 w-10'>
           <MinusIcon />
         </Button>
-        <Button size='lg' variant='ghost' className='h-10 w-18'>
+        <Button
+          size='lg'
+          variant='ghost'
+          className='h-10 w-18'
+          onClick={() => {
+            engine.viewport.setTransform({ x: 0, y: 0, scale: 1 });
+          }}
+        >
           {(zoom * 100).toFixed(0)}%
         </Button>
         <Button size='icon-lg' variant='ghost' className='h-10 w-10'>
