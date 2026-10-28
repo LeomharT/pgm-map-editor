@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react';
 import { useMapCanvas2D } from '../hooks/useMapCanvas2D';
 
 export default function MapCanvasMapController() {
-  const { engine } = useMapCanvas2D();
+  const engine = useMapCanvas2D();
 
-  const [zoom, setZoom] = useState(engine?.viewport.transform.scale ?? 1);
+  const [zoom, setZoom] = useState(engine.viewport.transform.scale);
 
   useEffect(() => {
     if (!engine) return;
@@ -21,7 +21,7 @@ export default function MapCanvasMapController() {
   }, [engine]);
 
   return (
-    <div className='bg-background absolute bottom-4 left-4 rounded-lg' onClick={() => {}}>
+    <div className='bg-background absolute bottom-4 left-4 rounded-lg shadow' onClick={() => {}}>
       <ButtonGroup>
         <Button size='icon-lg' variant='ghost' className='h-10 w-10'>
           <MinusIcon />

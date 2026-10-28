@@ -24,7 +24,7 @@ export default function MapCanvas2D() {
   return (
     <MapCanvas2DContext.Provider value={{ engine: engine }}>
       <div ref={ref} className='h-dvh w-dvw bg-neutral-50'>
-        <MapCanvasMapController />
+        {!engine ? null : <MapCanvasMapController />}
       </div>
     </MapCanvas2DContext.Provider>
   );
