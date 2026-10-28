@@ -1,19 +1,15 @@
 import { Colors } from '@/constants/colors';
 import type MapEngine2D from '.';
-import MapEngine2DGrid from './scene/grid';
 
 export default class MapEngine2DRenderer {
   constructor(engine: MapEngine2D) {
     this.canvas = document.createElement('canvas');
 
     this._engine = engine;
-    this._grid = new MapEngine2DGrid(engine);
   }
   private _engine: MapEngine2D;
 
   private _frameId: number | null = null;
-
-  private _grid: MapEngine2DGrid;
 
   public canvas: HTMLCanvasElement;
 
@@ -33,8 +29,6 @@ export default class MapEngine2DRenderer {
 
   private _render = () => {
     this._clean();
-
-    this._grid.draw();
   };
 
   public requestRender = () => {
