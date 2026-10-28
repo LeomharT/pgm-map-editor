@@ -2,7 +2,7 @@ import MapEngine2D from '@/engine/map-engine-2d';
 import { GridLayer } from '@/engine/map-engine-2d/layers/GridLayer';
 import { useEffect, useRef, useState } from 'react';
 import { MapCanvas2DContext } from '../context';
-import MapCanvasMapController from './MapCanvasMapController';
+import MapCanvas2DMapController from './MapCanvas2DMapController';
 
 export default function MapCanvas2D() {
   const ref = useRef<HTMLDivElement>(null);
@@ -29,7 +29,7 @@ export default function MapCanvas2D() {
       <div ref={ref} className='relative h-dvh w-dvw bg-neutral-50'>
         {!engine ? null : (
           <>
-            <MapCanvasMapController />
+            <MapCanvas2DMapController />
           </>
         )}
       </div>

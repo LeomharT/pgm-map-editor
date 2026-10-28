@@ -9,26 +9,31 @@ export class GridLayer extends Konva.Layer {
     super({ ...config, listening: false });
 
     this.add(
+      new Konva.Shape({
+        listening: false,
+        sceneFunc: (ctx) => {
+          const scale = this.getStage().scaleX();
+
+          const MAJOR_CELL_COLOR = scale > 0.5 ? Colors.NEUTRAL300 : Colors.NEUTRAL200;
+          const MINOR_CELL_COLOR = scale > 0.7 ? Colors.NEUTRAL300 : Colors.NEUTRAL200;
+
+          // Render minor lines
+          if (scale > 0.5) this._renderGrid(ctx, this.MINOR_CELL_STEP, MINOR_CELL_COLOR, [3, 3]);
+          this._renderGrid(ctx, this.MAJOR_CELL_STEP, MAJOR_CELL_COLOR);
+        },
+      }),
+    );
+
+    this.add(
       new Konva.Rect({
         width: 200,
         height: 200,
         fill: Colors.ROSE400,
       }),
     );
-
-    this.add(
-      new Konva.Shape({
-        listening: false,
-        sceneFunc: (ctx) => {
-          const MAJOR_CELL_COLOR = Colors.NEUTRAL300;
-
-          this._renderGrid(ctx, this.MAJOR_CELL_STEP, MAJOR_CELL_COLOR);
-        },
-      }),
-    );
   }
 
-  private _renderGrid(ctx: Konva.Context, step: number, color: string) {
+  private _renderGrid(ctx: Konva.Context, step: number, color: string, dash?: [number, number]) {
     const stage = this.getStage();
     if (!stage) return;
 
@@ -45,8 +50,10 @@ export class GridLayer extends Konva.Layer {
 
     ctx.lineWidth = 1 / scale;
     ctx.strokeStyle = color;
+    if (dash) ctx.setLineDash([dash[0] / scale, dash[1] / scale]);
 
     ctx.beginPath();
+    if (dash) ctx.lineDashOffset = top - (dash[0] / scale + dash[1] / scale);
     for (let x = Math.floor(left / step) * step; x < right; x += step) {
       ctx.moveTo(x, top);
       ctx.lineTo(x, bottom);
@@ -54,6 +61,7 @@ export class GridLayer extends Konva.Layer {
     ctx.stroke();
 
     ctx.beginPath();
+    if (dash) ctx.lineDashOffset = left - (dash[0] / scale + dash[1] / scale);
     for (let y = Math.floor(top / step) * step; y < bottom; y += step) {
       ctx.moveTo(left, y);
       ctx.lineTo(right, y);
