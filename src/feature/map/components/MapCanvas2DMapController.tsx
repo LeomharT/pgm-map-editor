@@ -33,12 +33,17 @@ export default function MapCanvas2DMapController() {
 
     const transform = engine.viewport.transform;
 
+    const size = engine.size;
+    const boundBox = engine.getContentBounds();
+
+    const targetScale = Math.min(size.width / boundBox.width, size.height / boundBox.height);
+
     tweenRef.current = gsap
       .to(transform, {
-        x: 0,
-        y: 0,
-        scale: 1,
-        duration: 0.36,
+        x: size.width / 2 - (boundBox.x + boundBox.width / 2) * targetScale,
+        y: size.height / 2 - (boundBox.y + boundBox.height / 2) * targetScale,
+        scale: targetScale,
+        duration: 0.2,
         ease: 'power2',
         onUpdate: () => {
           engine.viewport.setTransform(transform);

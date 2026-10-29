@@ -1,4 +1,5 @@
 import Konva from 'konva';
+import type { GetClientRectConfig } from 'konva/lib/Node';
 import MapEngine2DInteraction from './utils/interaction';
 import { MapEngine2DSize } from './utils/size';
 import MapEngine2DViewport, { type ViewPortTransform } from './viewport';
@@ -55,6 +56,15 @@ export default class MapEngine2D {
     this.stage.scaleX(transform.scale);
     this.stage.scaleY(transform.scale);
   };
+
+  public getContentBounds(config?: GetClientRectConfig) {
+    return this.stage.getClientRect({
+      skipTransform: true,
+      skipStroke: true,
+      skipShadow: true,
+      ...config,
+    });
+  }
 
   public dispose() {
     this.viewport.removeEventListener('transform', this._updateStageTransform);
