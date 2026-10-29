@@ -1,5 +1,6 @@
 import Konva from 'konva';
 import type { GetClientRectConfig } from 'konva/lib/Node';
+import { GridLayer } from './layers/GridLayer';
 import MapEngine2DInteraction from './utils/interaction';
 import { MapEngine2DSize } from './utils/size';
 import MapEngine2DViewport, { type ViewPortTransform } from './viewport';
@@ -33,6 +34,8 @@ export default class MapEngine2D {
 
   private _interaction: MapEngine2DInteraction;
 
+  private _theme: 'light' | 'dark' | 'system' = 'system';
+
   public viewport: MapEngine2DViewport;
 
   public addLayer(layer: Konva.Layer) {
@@ -65,6 +68,16 @@ export default class MapEngine2D {
       ...config,
     });
   }
+
+  public setTheme = (theme: typeof this._theme) => {
+    this._theme = theme;
+
+    for (const layer of this.stage.getLayers()) {
+      if (layer instanceof GridLayer) {
+        layer.setTheme(this._theme);
+      }
+    }
+  };
 
   public dispose() {
     this.viewport.removeEventListener('transform', this._updateStageTransform);

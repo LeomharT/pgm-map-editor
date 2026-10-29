@@ -1,6 +1,7 @@
 import { Colors } from '@/constants/colors';
 import Konva from 'konva';
 
+/** Non-interactive background grid that does not contribute to content bounds. */
 export class GridLayer extends Konva.Layer {
   MAJOR_CELL_STEP: number = 100;
   MINOR_CELL_STEP: number = this.MAJOR_CELL_STEP / 5;
@@ -12,10 +13,16 @@ export class GridLayer extends Konva.Layer {
       new Konva.Shape({
         listening: false,
         sceneFunc: (ctx) => {
+          const isDark = this._theme === 'dark';
           const scale = this.getStage().scaleX();
 
-          const MAJOR_CELL_COLOR = scale > 0.5 ? Colors.NEUTRAL300 : Colors.NEUTRAL200;
-          const MINOR_CELL_COLOR = scale > 0.7 ? Colors.NEUTRAL300 : Colors.NEUTRAL200;
+          let MAJOR_CELL_COLOR: string = scale > 0.5 ? Colors.NEUTRAL200 : Colors.NEUTRAL100;
+          let MINOR_CELL_COLOR: string = scale > 0.7 ? Colors.NEUTRAL200 : Colors.NEUTRAL100;
+
+          if (isDark) {
+            MAJOR_CELL_COLOR = scale > 0.5 ? Colors.NEUTRAL800 : Colors.NEUTRAL900;
+            MINOR_CELL_COLOR = scale > 0.7 ? Colors.NEUTRAL800 : Colors.NEUTRAL900;
+          }
 
           // Render minor lines
           if (scale > 0.5) this._renderGrid(ctx, this.MINOR_CELL_STEP, MINOR_CELL_COLOR, [3, 3]);
@@ -31,6 +38,15 @@ export class GridLayer extends Konva.Layer {
         fill: Colors.ROSE400,
       }),
     );
+  }
+
+  private _theme: 'light' | 'dark' | 'system' = 'system';
+
+  public setTheme(theme: 'light' | 'dark' | 'system') {
+    if (this._theme === theme) return;
+
+    this._theme = theme;
+    this.batchDraw();
   }
 
   private _renderGrid(ctx: Konva.Context, step: number, color: string, dash?: [number, number]) {

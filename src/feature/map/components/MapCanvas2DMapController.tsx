@@ -56,7 +56,7 @@ export default function MapCanvas2DMapController() {
   }
 
   return (
-    <div className='bg-background absolute bottom-4 left-4 rounded-lg shadow'>
+    <div className='bg-card absolute bottom-4 left-4 rounded-lg shadow'>
       <ButtonGroup>
         <Button size='icon-lg' variant='ghost' className='h-10 w-10'>
           <MinusIcon />
