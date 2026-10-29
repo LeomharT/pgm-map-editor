@@ -20,8 +20,8 @@ export class GridLayer extends Konva.Layer {
           let MINOR_CELL_COLOR: string = scale > 0.7 ? Colors.NEUTRAL200 : Colors.NEUTRAL100;
 
           if (isDark) {
-            MAJOR_CELL_COLOR = scale > 0.5 ? Colors.NEUTRAL800 : Colors.NEUTRAL900;
-            MINOR_CELL_COLOR = scale > 0.7 ? Colors.NEUTRAL800 : Colors.NEUTRAL900;
+            MAJOR_CELL_COLOR = scale > 0.5 ? Colors.SLATE800 : Colors.SLATE900;
+            MINOR_CELL_COLOR = scale > 0.7 ? Colors.SLATE800 : Colors.SLATE900;
           }
 
           // Render minor lines
